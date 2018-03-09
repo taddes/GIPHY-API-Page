@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
         crossorigin="anonymous">
     <link rel="stylesheet" href="./assets/style/style.css">
+    <link href="https://fonts.googleapis.com/css?family=Mina" rel="stylesheet">
 
 
 
@@ -47,19 +48,19 @@
 
 
         <div class="row">
-                <div class="col-md-9">&nbsp;</div>
+            <div class="col-md-9">&nbsp;</div>
 
-                <div class="col-md-3 searchBox">
+            <div class="col-md-3 searchBox">
 
-                        <div class="input-group">
-                            <input type="text" class="form-control searchGifBar" placeholder="Make a GIF Button!">
-                            <span class="input-group-btn">
-                                <input class="btn btn-default searchGifButton" type="submit">Create!</button>
-                            </span>
-                        </div>
-                        <!-- /input-group -->
-                    </div>
-                    </div>
+                <div class="input-group">
+                    <input type="text" class="form-control searchGifBar" placeholder="Make a GIF Button!">
+                    <span class="input-group-btn">
+                        <input class="btn btn-default searchGifButton" type="submit">Create!</button>
+                    </span>
+                </div>
+                <!-- /input-group -->
+            </div>
+        </div>
 
         <div class="row">
             <div class="col-md-9 gifContainer"></div>
@@ -68,7 +69,7 @@
 
 
 
-        
+
     </div>
 
 
@@ -95,8 +96,8 @@
         ]
 
 
-       function displayGifs() {
-            
+        function displayGifs() {
+
             var topic = $(this).attr("data-topic");
 
 
@@ -110,100 +111,99 @@
                 method: "GET"
 
             }).then(function (response) {
-                $(".gifContainer").text(JSON.stringify(response));
-          createButtons();
+
+                // Storing an array of results in the results variable
+
+                var results = response.data;
+
+                // Looping over every result item
+                for (var i = 0; i < results.length; i++) {
+
+                    // Only taking action if the photo has an appropriate rating
+
+                    // Creating a div with the class "item"
+                    var gifDiv = $("<div class='item'>");
+
+                    // Storing the result item's rating
+                    var rating = results[i].rating;
+
+                    // Creating a paragraph tag with the result item's rating
+                    var p = $("<p>").text("Rating: " + rating);
+
+                    // Creating an image tag
+                    var personImage = $("<img>");
+
+                    // Giving the image tag an src attribute of a proprty pulled off the
+                    // result item
+                    personImage.attr("src", results[i].images.fixed_height.url);
+
+                    // Appending the paragraph and personImage we created to the "gifDiv" div we created
+                    gifDiv.append(p);
+                    gifDiv.append(personImage);
+
+                    // Prepending the gifDiv to the "#gifs-appear-here" div in the HTML
+                    $(".gifContainer").prepend(gifDiv);
+
+                }
+
+                // $(".gifContainer").text(JSON.stringify(response));
+                createButtons();
+            });
+        }
+
+
+
+
+
+
+
+
+        function createButtons() {
+
+
+            $(".buttons").empty();
+
+
+            for (var i = 0; i < topics.length; i++) {
+
+
+                var btn = $("<button>");
+
+                btn.addClass("topic");
+
+                btn.attr("data-topic", topics[i]);
+
+                btn.text(topics[i]);
+
+                $(".buttons").append(btn);
+            }
+        }
+
+
+        // This function handles events where one button is clicked
+        $(".searchGifButton").on("click", function (event) {
+            event.preventDefault();
+
+
+
+            // This line grabs the input from the textbox
+            var searchTopic = $(".searchGifBar").val().trim();
+            console.log(searchTopic);
+
+            // Adding the topics from the textbox to our array
+            topics.push(searchTopic);
+            console.log(topics);
+
+            // Calling createButtons which handles the processing of our  array
+            createButtons();
         });
-    }
-     
 
+        // Function for displaying the topic info
+        // Using $(document).on instead of $(".topic").on to add event listeners to dynamically generated elements
+        $(document).on("click", ".topic", displayGifs);
 
-
-
-
-
-
-function createButtons() {
-
-
-$(".buttons").empty();
-
-
-for (var i = 0; i < topics.length; i++) {
-
-
-  var btn = $("<button>");
-
-  btn.addClass("topic");
-
-  btn.attr("data-topic", topics[i]);
- 
-  btn.text(topics[i]);
-
-  $(".buttons").append(btn);
-}
-}
-
-
-// This function handles events where one button is clicked
-$(".searchGifButton").on("click", function(event) {
-        event.preventDefault();
-
-        
-
-        // This line grabs the input from the textbox
-        var searchTopic = $(".searchGifBar").val().trim();
-        console.log(searchTopic);
-
-        // Adding the topics from the textbox to our array
-        topics.push(searchTopic);
-        console.log(topics);
-
-        // Calling createButtons which handles the processing of our  array
+        // Calling the renderButtons function to display the initial buttons
         createButtons();
-      });
-
-      // Function for displaying the topic info
-      // Using $(document).on instead of $(".topic").on to add event listeners to dynamically generated elements
-      $(document).on("click", ".topic", displayGifs);
-
-      // Calling the renderButtons function to display the initial buttons
-   createButtons();
-
-
-// Storing an array of results in the results variable
-//var results = response.data;
-
-// Looping over every result item
-//for (var i = 0; i < results.length; i++) {
-
- // Only taking action if the photo has an appropriate rating
-
- // Creating a div with the class "item"
- //var gifDiv = $("<div class='item'>");
-
- // Storing the result item's rating
- //var rating = results[i].rating;
-
- // Creating a paragraph tag with the result item's rating
- //var p = $("<p>").text("Rating: " + rating);
-
- // Creating an image tag
- //var personImage = $("<img>");
-
- // Giving the image tag an src attribute of a proprty pulled off the
- // result item
- //personImage.attr("src", results[i].images.fixed_height.url);
-
- // Appending the paragraph and personImage we created to the "gifDiv" div we created
- //gifDiv.append(p);
- //gifDiv.append(personImage);
-
- // Prepending the gifDiv to the "#gifs-appear-here" div in the HTML
- //$(".gifContainer").prepend(gifDiv);
-
-//}
- 
-
 
 
 
@@ -215,16 +215,3 @@ $(".searchGifButton").on("click", function(event) {
 </body>
 
 </html>
-
-
-
-
-
-
-
-
-
-
-
-          
-  
